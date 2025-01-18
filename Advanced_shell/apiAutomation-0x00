@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Directory for logs and data
+DIRECTORY="Advanced_shell"
+mkdir -p "$DIRECTORY"
+
+# Output files
+DATA_FILE="$DIRECTORY/data.json"
+ERROR_FILE="$DIRECTORY/errors.txt"
+
+# Pokémon API URL for Pikachu
+API_URL="https://pokeapi.co/api/v2/pokemon/pikachu"
+
+# Make the API request
+echo "Fetching data for Pikachu from the Pokémon API..."
+RESPONSE=$(curl -s -w "%{http_code}" -o "$DATA_FILE" "$API_URL")
+
+# Extract the HTTP status code
+HTTP_STATUS="${RESPONSE: -3}"
+
+# Check if the request was successful
+if [[ "$HTTP_STATUS" -eq 200 ]]; then
+  echo "Data successfully fetched and saved to $DATA_FILE."
+else
+  echo "Failed to fetch data. HTTP Status: $HTTP_STATUS" | tee -a "$ERROR_FILE"
+  mv "$DATA_FILE" "$DATA_FILE.failed" 2>/dev/null
+fi
